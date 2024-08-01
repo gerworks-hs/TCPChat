@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <unistd.h>
+#include <sys/socket.h>
 int main(int argc, char **argv) {
 	//Check for correct app usage
 	if (argc != 2) {
@@ -18,8 +20,15 @@ int main(int argc, char **argv) {
 		fprintf(stdout, "Server will listen on port <%d>\n", localPort);
 	}
 	//Create server local socket
-	//const int serverSocket = socket(AF_INET, SOCK_STREAM, 0);
-	
-	return 0;
+	const int serverSocket = socket(AF_INET, SOCK_STREAM, 0); //Create server local socket (TCP/IP)
+	if (serverSocket == -1) { //Check for errors
+		fprintf(stderr, "Failed trying to create server local socket\n");
+		return 1;
+	} else {
+		fprintf(stdout, "Server local socket created, file descriptor is <%d>\n", serverSocket);
+	}
+	close(serverSocket); //Close the server local socket file descriptor
+	fprintf(stdout, "Server local socket closed, shutting down...\n");
+	return 0; //Main return
 }
 //Made by Gerworks-HS (@itsgerliz)
