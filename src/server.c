@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <unistd.h>
+#include <poll.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
 int main(int argc, char **argv) {
@@ -51,6 +52,7 @@ int main(int argc, char **argv) {
 	} else {
 		fprintf(stdout, "Local socket is now listening for incoming connections\n");
 	}
+	//Start main loop to accept incoming connections
 	//while (1) {}
 	close(serverSocket); //Close the server local socket file descriptor
 	fprintf(stdout, "Server local socket closed, shutting down...\n");
