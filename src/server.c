@@ -14,7 +14,7 @@ int main(int argc, char **argv) {
 		fprintf(stderr, "Port <%s> is not in a valid range\n", argv[1]);
 		return 1;
 	} else {
-		const uint16_t localPort = (uint16_t)parsedPort //Type-cast the long to an unsigned 16-bit integer (0-65535)
+		const uint16_t localPort = (uint16_t)parsedPort; //Type-cast the long to an unsigned 16-bit integer (0-65535)
 		fprintf(stdout, "Server will listen on port <%d>\n", localPort);
 	}
 	//Create server local socket
