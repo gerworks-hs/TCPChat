@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <unistd.h>
 #include <sys/socket.h>
+#include <arpa/inet.h>
 int main(int argc, char **argv) {
 	//Check for correct app usage
 	if (argc != 2) {
@@ -11,12 +12,13 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 	//Parse port from argv to a long using strtol
+	uint16_t localPort; //Variable for later use
 	long parsedPort = strtol(argv[1], NULL, 10);
 	if (parsedPort < 1 || parsedPort > 65535) { //Check if it overflows or underflows the valid range
 		fprintf(stderr, "Port <%s> is not in a valid range\n", argv[1]);
 		return 1;
 	} else {
-		const uint16_t localPort = (uint16_t)parsedPort; //Type-cast the long to an unsigned 16-bit integer (0-65535)
+		localPort = (uint16_t)parsedPort; //Type-cast the long to an unsigned 16-bit integer (0-65535)
 		fprintf(stdout, "Server will listen on port <%d>\n", localPort);
 	}
 	//Create server local socket
@@ -27,6 +29,21 @@ int main(int argc, char **argv) {
 	} else {
 		fprintf(stdout, "Server local socket created, file descriptor is <%d>\n", serverSocket);
 	}
+	//Bind server local address to local server socket
+	///Creation of the server address structure
+	struct sockaddr_in serverAddress;
+	serverAddress.sin_family = AF_INET;
+	serverAddress.sin_port = htons(localPort); //To convert port to network byte order
+	inet_pton(AF_INET, "127.0.0.1", &serverAddress.sin_addr); //To convert loopback address to network byte order
+	///Bind function and error check
+	if (bind(serverSocket, (const struct sockaddr *)&serverAddress, sizeof(serverAddress)) == -1) {
+		fprintf(stderr, "Failed to bind server address to local socket\n");
+		close(serverSocket);
+		return 1;
+	} else {
+		fprintf(stdout, "Server address bound to local socket\n");
+	}
+
 	close(serverSocket); //Close the server local socket file descriptor
 	fprintf(stdout, "Server local socket closed, shutting down...\n");
 	return 0; //Main return
