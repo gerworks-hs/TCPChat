@@ -43,7 +43,15 @@ int main(int argc, char **argv) {
 	} else {
 		fprintf(stdout, "Server address bound to local socket\n");
 	}
-
+	//Set local socket as listening
+	if (listen(serverSocket, 5) == -1) {
+		fprintf(stderr, "Error trying to set local socket as listening\n");
+		close(serverSocket);
+		return 1;
+	} else {
+		fprintf(stdout, "Local socket is now listening for incoming connections\n");
+	}
+	//while (1) {}
 	close(serverSocket); //Close the server local socket file descriptor
 	fprintf(stdout, "Server local socket closed, shutting down...\n");
 	return 0; //Main return
