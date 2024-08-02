@@ -53,7 +53,21 @@ int main(int argc, char **argv) {
 		fprintf(stdout, "Local socket is now listening for incoming connections\n");
 	}
 	//Start main loop to accept incoming connections
-	//while (1) {}
+	///We will use poll() to check if there is data to retrieve or send
+	struct sockaddr_in clientAddress; //Declare structure to save client address
+	socklen_t clientAddress_len = sizeof(clientAddress); //Save size of clientAddress struct in this variable
+	while (1) {
+		int clientSocket = accept(serverSocket, (struct sockaddr *)&clientAddress, &clientAddress_len);
+		if (clientSocket == -1) {
+			fprintf("Failed trying to accept next incoming connection, retrying...\n");
+			continue; //Proceed to next iteration when no incoming connection is found to accept
+		} else {
+			char clientIP[INET_ADDRSTRLEN]; //Declare variable to save client IP with max size defined by the macro
+			inet_ntop(AF_INET, &clientAddress.sin_addr, &clientIP, sizeof(clientIP)); //Convert IP to human notation
+			fprintf(stdout, "Incoming connection from <%lu>\n", &clientIP;
+			fprintf(stdout, "Connection stablished\n");
+		}
+	}
 	close(serverSocket); //Close the server local socket file descriptor
 	fprintf(stdout, "Server local socket closed, shutting down...\n");
 	return 0; //Main return
