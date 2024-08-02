@@ -59,12 +59,12 @@ int main(int argc, char **argv) {
 	while (1) {
 		int clientSocket = accept(serverSocket, (struct sockaddr *)&clientAddress, &clientAddress_len);
 		if (clientSocket == -1) {
-			fprintf("Failed trying to accept next incoming connection, retrying...\n");
+			fprintf(stderr, "Failed trying to accept next incoming connection, retrying...\n");
 			continue; //Proceed to next iteration when no incoming connection is found to accept
 		} else {
 			char clientIP[INET_ADDRSTRLEN]; //Declare variable to save client IP with max size defined by the macro
-			inet_ntop(AF_INET, &clientAddress.sin_addr, &clientIP, sizeof(clientIP)); //Convert IP to human notation
-			fprintf(stdout, "Incoming connection from <%lu>\n", &clientIP;
+			inet_ntop(AF_INET, &clientAddress.sin_addr, clientIP, sizeof(clientIP)); //Convert IP to human notation
+			fprintf(stdout, "Incoming connection from <%lu>\n", &clientIP);
 			fprintf(stdout, "Connection stablished\n");
 		}
 	}
