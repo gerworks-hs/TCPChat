@@ -83,7 +83,7 @@ void main(int argc, char **argv) { //Main function
 			fprintf(stdout, "Incoming connection from <%lu>\n", clientIP);
 			fprintf(stdout, "Connection stablished\n");
 			//Define fds struct
-			struct pollfd fds[2] {
+			struct pollfd pollfds[2] = {
 				{
 					0, //Standard input aka stdin (file descriptor 0)
 					POLLIN, //Check for data to be read
@@ -94,12 +94,12 @@ void main(int argc, char **argv) { //Main function
 					POLLIN,
 					-1
 				}
-			}
+			};
 			//Start poll()
-			poll(fds, 2, -1);
+			poll(pollfds, 2, -1);
 			//Poll will wait until some file descriptor has data to read
-			if (fds[0].revents & POLLIN) {
-			} else if (fds[1].revents & POLLIN) {
+			if (pollfds[0].revents & POLLIN) {
+			} else if (pollfds[1].revents & POLLIN) {
 			}
 		}
 	}
