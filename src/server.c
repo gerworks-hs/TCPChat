@@ -37,7 +37,7 @@ void main(int argc, char **argv) { //Main function
 		fprintf(stdout, "Server will listen on port <%d>\n", localPort);
 	}
 	//Create server local socket
-	int serverSocket = socket(AF_INET, SOCK_STREAM, 0); //Create server local socket (TCP/IP)
+	serverSocket = socket(AF_INET, SOCK_STREAM, 0); //Create server local socket (TCP/IP)
 	if (serverSocket == -1) { //Check for errors
 		fprintf(stderr, "Failed trying to create server local socket\n");
 		exit(EXIT_FAILURE);
@@ -71,14 +71,14 @@ void main(int argc, char **argv) { //Main function
 	struct sockaddr_in clientAddress; //Declare structure to save client address
 	socklen_t clientAddress_len = sizeof(clientAddress); //Save size of clientAddress struct in this variable
 	while (1) {
-		int clientSocket = accept(serverSocket, (struct sockaddr *)&clientAddress, &clientAddress_len);
+		clientSocket = accept(serverSocket, (struct sockaddr *)&clientAddress, &clientAddress_len);
 		if (clientSocket == -1) {
 			fprintf(stderr, "Failed trying to accept next incoming connection, retrying...\n");
 			continue; //Proceed to next iteration when no incoming connection is found to accept
 		} else {
 			char clientIP[INET_ADDRSTRLEN]; //Declare variable to save client IP with max size defined by the macro
 			inet_ntop(AF_INET, &clientAddress.sin_addr, clientIP, sizeof(clientIP)); //Convert IP to human notation
-			fprintf(stdout, "Incoming connection from <%lu>\n", &clientIP);
+			fprintf(stdout, "Incoming connection from <%lu>\n", clientIP);
 			fprintf(stdout, "Connection stablished\n");
 		}
 	}
