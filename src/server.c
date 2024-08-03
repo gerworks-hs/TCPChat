@@ -89,22 +89,21 @@ void main(int argc, char **argv) { //Main function
 			fprintf(stdout, "Incoming connection from <%s>\n", clientIP);
 			fprintf(stdout, "Connection established\n");
 			fprintf(stdout, "----------------------\n");
-			//Define fds struct
-			struct pollfd pollfds[2] = {
-				{
-					0, //Standard input aka stdin (file descriptor 0)
-					POLLIN, //Check for data to be read
-					-1 //Init returned events as -1, it will be overriden in the future
-				},
-				{ //The same changing the fd 0 (stdin) to the file descriptor of the new client socket
-					clientSocket,
-					POLLIN,
-					-1
-				}
-			};
 			//Start poll() loop
 			char buffer[256];
 			while (1) {
+				struct pollfd pollfds[2] = {
+					{
+						0, //Standard input aka stdin (file descriptor 0)
+						POLLIN, //Check for data to be read
+						-1 //Init returned events as -1, it will be overriden in the future
+					},
+					{ //The same changing the fd 0 (stdin) to the file descriptor of the new client socket
+						clientSocket,
+						POLLIN,
+						-1
+					}
+				};
 				memset(buffer, 0, sizeof(buffer));
 				poll(pollfds, 2, -1);
 				//Poll will wait until some file descriptor has data to read
