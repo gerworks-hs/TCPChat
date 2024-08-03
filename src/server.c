@@ -86,7 +86,7 @@ void main(int argc, char **argv) { //Main function
 			//Print data of the incoming connection
 			char clientIP[INET_ADDRSTRLEN]; //Declare variable to save client IP with max size defined by the macro
 			inet_ntop(AF_INET, &clientAddress.sin_addr, clientIP, sizeof(clientIP)); //Convert IP to human notation
-			fprintf(stdout, "Incoming connection from <%lu>\n", clientIP);
+			fprintf(stdout, "Incoming connection from <%s>\n", clientIP);
 			fprintf(stdout, "Connection stablished\n");
 			fprintf(stdout, "----------------------\n");
 			//Define fds struct
