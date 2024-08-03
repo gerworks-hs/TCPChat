@@ -72,8 +72,8 @@ void main(int argc, char **argv) { //Main function
 	///We use the following structure to save the client address
 	struct sockaddr_in clientAddress; //Declare structure to save client address
 	socklen_t clientAddress_len = sizeof(clientAddress); //Save size of clientAddress struct in this variable
+	int flag = 0; //Flag var to exit program after 5 fails accepting incoming connections
 	while (1) {
-		int flag = 0;
 		clientSocket = accept(serverSocket, (struct sockaddr *)&clientAddress, &clientAddress_len);
 		if (clientSocket == -1 && flag != 5) {
 			flag++;
@@ -114,7 +114,6 @@ void main(int argc, char **argv) { //Main function
 					if (strcmp(buffer, "@@next@@") == 0) {
 						fprintf(stdout, "----------------------\n");
 						fprintf(stdout, "Connection closed\n");
-						close(clientSocket);
 						break;
 					} else {
 						send(clientSocket, buffer, bytesRead, 0);
