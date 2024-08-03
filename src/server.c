@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <unistd.h>
+#include <string.h>
 #include <poll.h>
 #include <signal.h>
 #include <sys/socket.h>
@@ -72,16 +73,22 @@ void main(int argc, char **argv) { //Main function
 	struct sockaddr_in clientAddress; //Declare structure to save client address
 	socklen_t clientAddress_len = sizeof(clientAddress); //Save size of clientAddress struct in this variable
 	while (1) {
+		int flag = 0;
 		clientSocket = accept(serverSocket, (struct sockaddr *)&clientAddress, &clientAddress_len);
-		if (clientSocket == -1) {
-			fprintf(stderr, "Failed trying to accept next incoming connection, retrying...\n");
+		if (clientSocket == -1 && flag != 5) {
+			flag++;
+			fprintf(stderr, "Failed trying to accept next incoming connection, retrying in 5 seconds...\n");
+			sleep(5);
 			continue; //Proceed to next iteration when no incoming connection is found to accept
+		} else if (flag == 5) {
+			break;
 		} else {
 			//Print data of the incoming connection
 			char clientIP[INET_ADDRSTRLEN]; //Declare variable to save client IP with max size defined by the macro
 			inet_ntop(AF_INET, &clientAddress.sin_addr, clientIP, sizeof(clientIP)); //Convert IP to human notation
 			fprintf(stdout, "Incoming connection from <%lu>\n", clientIP);
 			fprintf(stdout, "Connection stablished\n");
+			fprintf(stdout, "----------------------\n");
 			//Define fds struct
 			struct pollfd pollfds[2] = {
 				{
@@ -95,14 +102,31 @@ void main(int argc, char **argv) { //Main function
 					-1
 				}
 			};
-			//Start poll()
-			poll(pollfds, 2, -1);
-			//Poll will wait until some file descriptor has data to read
-			if (pollfds[0].revents & POLLIN) {
-			} else if (pollfds[1].revents & POLLIN) {
+			//Start poll() loop
+			char buffer[256];
+			while (1) {
+				memset(buffer, 0, sizeof(buffer));
+				poll(pollfds, 2, -1);
+				//Poll will wait until some file descriptor has data to read
+				if (pollfds[0].revents & POLLIN) {
+					int bytesRead = read(0, buffer, sizeof(buffer));
+					buffer[bytesRead] = '\0';
+					if (strcmp(buffer, "@@next@@") == 0) {
+						fprintf(stdout, "----------------------\n");
+						fprintf(stdout, "Connection closed\n");
+						close(clientSocket);
+						break;
+					} else {
+						send(clientSocket, buffer, bytesRead, 0);
+					}
+				} else if (pollfds[1].revents & POLLIN) {
+					int bytesReceived = recv(clientSocket, buffer, sizeof(buffer), 0);
+					fprintf(stdout, "Client: <%s> Bytes: <%d>\n", buffer, bytesReceived);
+				}
 			}
 		}
 	}
+	close(clientSocket);
 	close(serverSocket); //Close the server local socket file descriptor
 	fprintf(stdout, "Server local socket closed, shutting down...\n");
 	exit(EXIT_SUCCESS); //Main return
