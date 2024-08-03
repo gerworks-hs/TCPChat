@@ -8,8 +8,8 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 //Global variables for the file descriptors (serverSocket and clientSocket)
-int serverSocket;
-int clientSocket;
+int serverSocket = -100;
+int clientSocket = -100;
 //Function to handle Control+C (SIGINT)
 void sigint_handler(int signal){
 	close(serverSocket);
@@ -67,7 +67,8 @@ void main(int argc, char **argv) { //Main function
 		fprintf(stdout, "Local socket is now listening for incoming connections\n");
 	}
 	//Start main loop to accept incoming connections
-	///We will use poll() to check if there is data to retrieve or send
+	///We will use poll() to check if there is data to retrieve or send, lets define the structures here
+	///We use the following structure to save the client address
 	struct sockaddr_in clientAddress; //Declare structure to save client address
 	socklen_t clientAddress_len = sizeof(clientAddress); //Save size of clientAddress struct in this variable
 	while (1) {
@@ -76,10 +77,30 @@ void main(int argc, char **argv) { //Main function
 			fprintf(stderr, "Failed trying to accept next incoming connection, retrying...\n");
 			continue; //Proceed to next iteration when no incoming connection is found to accept
 		} else {
+			//Print data of the incoming connection
 			char clientIP[INET_ADDRSTRLEN]; //Declare variable to save client IP with max size defined by the macro
 			inet_ntop(AF_INET, &clientAddress.sin_addr, clientIP, sizeof(clientIP)); //Convert IP to human notation
 			fprintf(stdout, "Incoming connection from <%lu>\n", clientIP);
 			fprintf(stdout, "Connection stablished\n");
+			//Define fds struct
+			struct pollfd fds[2] {
+				{
+					0, //Standard input aka stdin (file descriptor 0)
+					POLLIN, //Check for data to be read
+					-1 //Init returned events as -1, it will be overriden in the future
+				},
+				{ //The same changing the fd 0 (stdin) to the file descriptor of the new client socket
+					clientSocket,
+					POLLIN,
+					-1
+				}
+			}
+			//Start poll()
+			poll(fds, 2, -1);
+			//Poll will wait until some file descriptor has data to read
+			if (fds[0].revents & POLLIN) {
+			} else if (fds[1].revents & POLLIN) {
+			}
 		}
 	}
 	close(serverSocket); //Close the server local socket file descriptor
