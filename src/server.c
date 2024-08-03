@@ -14,7 +14,7 @@ int clientSocket = -100;
 void sigint_handler(int signal){
 	close(serverSocket);
 	close(clientSocket);
-	fprintf(stderr, "Control+C(SIGINT) catched\n");
+	fprintf(stderr, "\nControl+C(SIGINT) catched\n");
 	exit(EXIT_FAILURE);
 }
 //Start of the main program
