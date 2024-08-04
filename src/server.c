@@ -110,6 +110,11 @@ void main(int argc, char **argv) { //Main function
 				if (pollfds[0].revents & POLLIN) {
 					int bytesRead = read(0, buffer, sizeof(buffer));
 					buffer[bytesRead] = '\0';
+					for (int i = 0; buffer[i] != '\0'; i++) {
+						if (buffer[i] == '\n') {
+							buffer[i] = 0;
+						}
+					}
 					if (strcmp(buffer, "@@next@@") == 0) {
 						fprintf(stdout, "----------------------\n");
 						fprintf(stdout, "Connection closed\n");

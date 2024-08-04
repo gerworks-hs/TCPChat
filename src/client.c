@@ -81,9 +81,9 @@ void main(int argc, char **argv) {
 			if (pollfds[0].revents & POLLIN) {
 				int bytesRead = read(0, buffer, sizeof(buffer));
 				buffer[bytesRead] = '\0'; //Null terminate the string
-				for (int i = 0, i == sizeof(buffer), i++) { //Remove all new lines from the buffer
+				for (int i = 0; buffer[i] != '\0'; i++) { //Remove all new lines from the buffer
 					if (buffer[i] == '\n') {
-						buffer[i] == '\0';
+						buffer[i] = 0;
 					}
 				}
 				if (strcmp(buffer, "@@close@@") == 0) {
