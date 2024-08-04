@@ -50,7 +50,7 @@ void main(int argc, char **argv) { //Main function
 	struct sockaddr_in serverAddress;
 	serverAddress.sin_family = AF_INET;
 	serverAddress.sin_port = htons(localPort); //To convert port to network byte order
-	inet_pton(AF_INET, "127.0.0.1", &serverAddress.sin_addr); //To convert loopback address to network byte order
+	inet_pton(AF_INET, "0.0.0.0", &serverAddress.sin_addr); //To convert loopback address to network byte order
 	///Bind function and error check
 	if (bind(serverSocket, (const struct sockaddr *)&serverAddress, sizeof(serverAddress)) == -1) {
 		fprintf(stderr, "Failed to bind server address to local socket\n");
